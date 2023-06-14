@@ -1,15 +1,76 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+import sys, enum
+from collections import deque
+from typing import Tuple, TypeVar, Any
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+def get_maze_input(f):
+    temp = f.readline()
+    temp_ij = temp.split(",")
+    #  getting length & Width
+    row = int(temp_ij[0])
+    column = int(temp_ij[1].split("\n")[0].strip())
+    temp = f.readlines()
+    temp_list = []
+    # deleting \n from the
+    for item in temp:
+        temp_list.append(item.split("\n")[0])
+    # creating 2D Array for elements
+    new_temp_list = []
+    for item_in_row in temp_list:
+        new_temp_list.append([char for char in item_in_row])
+    for row_index in range(len(temp_list)):
+        for column_index in range(len(temp_list[row_index])):
+            if temp_list[row_index][column_index] == "S":
+                s_index = [row_index, column_index]
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    return row, column, new_temp_list, s_index
+
+
+
+
+
+
+class Position:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+
+class Node:
+    def __init__(self, state, parent: Any | None, index: position):
+        self.parent = parent
+        self.state = state
+        self.index = index
+
+    def is_goal(self):
+        if self.state == "G" :
+            return True
+        else:
+            return False
+
+    def goal_path(self, explore : set):
+        self
+
+
+
+    def expand(self, )
+
+
+with open(file="Input.txt", mode="r") as f:
+    row, column, maze_space_array, s_index = get_maze_input(f)
+
+stack = deque()
+visited = set()
+s_postion = position(s_index[0], s_index[1])
+
+node = Node("S", )
+
+stack.insert(node)
+
+while stack:
+
+    current_node = stack.pop()
+
+    if is_goal(current_node): final_path(current_node)
+
+    expand(current_node)
