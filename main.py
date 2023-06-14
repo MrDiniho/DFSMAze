@@ -26,6 +26,47 @@ def get_maze_input(f):
     return row, column, new_temp_list, s_index
 
 
+def expand(node: Any):
+    if is_expanded(node): return
+
+    node_index_x, node_index_y = node.get()
+    counter = 0
+
+    if (node_index_x + 1) <= row:
+        node_position = Position(node_index_x + 1, node_index_y)
+        child_node = Node(maze_space_array[node_index_x + 1][node_index_y], node, node_position)
+        stack.append(child_node)
+        counter += 1
+
+    if (node_index_x - 1) >= 0:
+        node_position = Position(node_index_x - 1, node_index_y)
+        child_node = Node(maze_space_array[node_index_x - 1][node_index_y], node, node_position)
+        stack.append(child_node)
+        counter += 1
+
+    if (node_index_y + 1) <= column:
+        node_position = Position(node_index_x, node_index_y + 1)
+        child_node = Node(maze_space_array[node_index_x][node_index_y + 1], node, node_position)
+        stack.append(child_node)
+        counter += 1
+
+    if (node_index_y - 1) >= 0:
+        node_position = Position(node_index_x, node_index_y - 1)
+        child_node = Node(maze_space_array[node_index_x][node_index_y - 1], node, node_position)
+        stack.append(child_node)
+        counter += 1
+
+    if counter != 0:
+        visited.add(node)
+
+
+def is_expanded(node: Any):
+    for item in visited:
+        if item.get() == node.get():
+            return True
+    return False
+
+
 class Position:
     def __init__(self, x, y):
         self.x = x
@@ -38,6 +79,9 @@ class Node:
         self.state = state
         self.index = index
 
+    def get(self):
+        return self.index.x, self.index.y
+
     def is_goal(self):
         if self.state == "G":
             return True
@@ -47,25 +91,24 @@ class Node:
     def goal_path(self):
         final_path = [(self.index.x, self.index.y)]
         temp_node = self.parent
-        while True:
+        while temp_node is not None:
             final_path.append((temp_node.index.x, temp_node.index.y))
-            if temp_node.parent is None:
-                break
             temp_node = temp_node.parent
-        while True:
 
-            if final_path[0][0] == final_path[1][0] and final_path[1][1]+1 == final_path[0][1]:
-                goal_path = "R , "
-            if final_path[0][0] == final_path[1][0] and final_path[1][1] == final_path[0][1] + 1 :
-                goal_path = "L , "
-            if final_path[0][1] == final_path[1][1] and final_path[0][0] + 1 == final_path[1][0]:
-                goal_path = "U , "
-            if final_path[0][0] == final_path[1][0] and final_path[1][1] == final_path[0][1] + 1 :
-                goal_path = "D , "
-            if final_path[]
+        goal_path = []
+        for i in range(len(final_path) - 1, 0, -1):
+            curr_coords = final_path[i]
+            prev_coords = final_path[i - 1]
+            if curr_coords[0] == prev_coords[0] and curr_coords[1] == prev_coords[1] + 1:
+                goal_path.append("L")
+            elif curr_coords[0] == prev_coords[0] and curr_coords[1] == prev_coords[1] - 1:
+                goal_path.append("R")
+            elif curr_coords[0] == prev_coords[0] + 1 and curr_coords[1] == prev_coords[1]:
+                goal_path.append("U")
+            elif curr_coords[0] == prev_coords[0] - 1 and curr_coords[1] == prev_coords[1]:
+                goal_path.append("D")
 
-
-    # def expand(self, )
+        return " ".join(goal_path)
 
 
 with open(file="Input.txt", mode="r") as f:
@@ -74,14 +117,13 @@ with open(file="Input.txt", mode="r") as f:
 stack = deque()
 visited = set()
 s_postion = Position(s_index[0], s_index[1])
-
-node = Node("S", )
-
-stack.insert(node)
+node = Node("S", None, s_postion)
+stack.append(node)
 
 while stack:
     current_node = stack.pop()
 
-    # if Node.is_goal(current_node): Node_path(current_node)
-
-    # expand(current_node)
+    if current_node.is_goal():
+        current_node.goal_path()
+        break
+    expand(current_node)
