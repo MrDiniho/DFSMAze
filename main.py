@@ -26,10 +26,6 @@ def get_maze_input(f):
     return row, column, new_temp_list, s_index
 
 
-
-
-
-
 class Position:
     def __init__(self, x, y):
         self.x = x
@@ -37,23 +33,39 @@ class Position:
 
 
 class Node:
-    def __init__(self, state, parent: Any | None, index: position):
+    def __init__(self, state, parent: Any | None, index: Position):
         self.parent = parent
         self.state = state
         self.index = index
 
     def is_goal(self):
-        if self.state == "G" :
+        if self.state == "G":
             return True
         else:
             return False
 
-    def goal_path(self, explore : set):
-        self
+    def goal_path(self):
+        final_path = [(self.index.x, self.index.y)]
+        temp_node = self.parent
+        while True:
+            final_path.append((temp_node.index.x, temp_node.index.y))
+            if temp_node.parent is None:
+                break
+            temp_node = temp_node.parent
+        while True:
+
+            if final_path[0][0] == final_path[1][0] and final_path[1][1]+1 == final_path[0][1]:
+                goal_path = "R , "
+            if final_path[0][0] == final_path[1][0] and final_path[1][1] == final_path[0][1] + 1 :
+                goal_path = "L , "
+            if final_path[0][1] == final_path[1][1] and final_path[0][0] + 1 == final_path[1][0]:
+                goal_path = "U , "
+            if final_path[0][0] == final_path[1][0] and final_path[1][1] == final_path[0][1] + 1 :
+                goal_path = "D , "
+            if final_path[]
 
 
-
-    def expand(self, )
+    # def expand(self, )
 
 
 with open(file="Input.txt", mode="r") as f:
@@ -61,16 +73,15 @@ with open(file="Input.txt", mode="r") as f:
 
 stack = deque()
 visited = set()
-s_postion = position(s_index[0], s_index[1])
+s_postion = Position(s_index[0], s_index[1])
 
 node = Node("S", )
 
 stack.insert(node)
 
 while stack:
-
     current_node = stack.pop()
 
-    if is_goal(current_node): final_path(current_node)
+    # if Node.is_goal(current_node): Node_path(current_node)
 
-    expand(current_node)
+    # expand(current_node)
