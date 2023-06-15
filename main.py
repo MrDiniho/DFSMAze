@@ -144,8 +144,9 @@ def get_time(run_time):
     print(f'Run time: {run_time:.3f} {type_time}')
 
 
+# if wanna get input from User enter this code : input_file_name = input()
 start_time = time.perf_counter()
-
+# if wanna get input from User , replace this with next code : with open(file=input_file_name, mode="r") as f:
 with open(file="Input.txt", mode="r") as f:
     row, column, maze_space_array, s_index = get_maze_input(f)
 
