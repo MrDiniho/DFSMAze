@@ -1,6 +1,7 @@
-import sys, enum
+import sys
+import time
 from collections import deque
-from typing import Tuple, TypeVar, Any
+from typing import Any
 
 
 def get_maze_input(f):
@@ -27,37 +28,47 @@ def get_maze_input(f):
 
 
 def expand(node: Any):
-    if is_expanded(node): return
-
     node_index_x, node_index_y = node.get()
-    counter = 0
+    expanded_count = 0
+    if not is_expanded(node):
+        if (node_index_x + 1) <= row - 1:
+            node_position = Position(node_index_x + 1, node_index_y)
+            child_node = Node(maze_space_array[node_index_x + 1][node_index_y], node, node_position)
+            if not is_created(child_node):
+                stack.append(child_node)
+                created[child_node.get()] = True
+                expanded_count += 1
 
-    if (node_index_x + 1) <= row:
-        node_position = Position(node_index_x + 1, node_index_y)
-        child_node = Node(maze_space_array[node_index_x + 1][node_index_y], node, node_position)
-        stack.append(child_node)
-        counter += 1
+        if (node_index_x - 1) >= 0:
+            node_position = Position(node_index_x - 1, node_index_y)
+            child_node = Node(maze_space_array[node_index_x - 1][node_index_y], node, node_position)
+            if not is_created(child_node):
+                stack.append(child_node)
+                created[child_node.get()] = True
+                expanded_count += 1
 
-    if (node_index_x - 1) >= 0:
-        node_position = Position(node_index_x - 1, node_index_y)
-        child_node = Node(maze_space_array[node_index_x - 1][node_index_y], node, node_position)
-        stack.append(child_node)
-        counter += 1
+        if (node_index_y + 1) <= column - 1:
+            node_position = Position(node_index_x, node_index_y + 1)
+            child_node = Node(maze_space_array[node_index_x][node_index_y + 1], node, node_position)
+            if not is_created(child_node):
+                stack.append(child_node)
+                created[child_node.get()] = True
+                expanded_count += 1
 
-    if (node_index_y + 1) <= column:
-        node_position = Position(node_index_x, node_index_y + 1)
-        child_node = Node(maze_space_array[node_index_x][node_index_y + 1], node, node_position)
-        stack.append(child_node)
-        counter += 1
+        if (node_index_y - 1) >= 0:
+            node_position = Position(node_index_x, node_index_y - 1)
+            child_node = Node(maze_space_array[node_index_x][node_index_y - 1], node, node_position)
+            if not is_created(child_node):
+                stack.append(child_node)
+                created[child_node.get()] = True
+                expanded_count += 1
 
-    if (node_index_y - 1) >= 0:
-        node_position = Position(node_index_x, node_index_y - 1)
-        child_node = Node(maze_space_array[node_index_x][node_index_y - 1], node, node_position)
-        stack.append(child_node)
-        counter += 1
+        if expanded_count > 0:
+            visited.add(node)
 
-    if counter != 0:
-        visited.add(node)
+
+def is_created(node: Any):
+    return node.get() in created
 
 
 def is_expanded(node: Any):
@@ -65,6 +76,13 @@ def is_expanded(node: Any):
         if item.get() == node.get():
             return True
     return False
+
+
+# def is_created(node: Any):
+#   for item in stack:
+#      if item.get() == node.get():
+#         return True
+# return False
 
 
 class Position:
@@ -81,6 +99,9 @@ class Node:
 
     def get(self):
         return self.index.x, self.index.y
+
+    def get_state(self):
+        return self.state
 
     def is_goal(self):
         if self.state == "G":
@@ -111,19 +132,47 @@ class Node:
         return " ".join(goal_path)
 
 
+def get_time(run_time):
+    run_time = (end_time - start_time) * 1e9
+    type_time = 'ns'
+    if run_time / 1000000 > 1:
+        run_time = run_time / 1000000
+        type_time = 'ms'
+        if run_time / 1000 > 1:
+            run_time = run_time / 1000
+            type_time = 's'
+    print(f'Run time: {run_time:.3f} {type_time}')
+
+
+start_time = time.perf_counter()
+
 with open(file="Input.txt", mode="r") as f:
     row, column, maze_space_array, s_index = get_maze_input(f)
 
 stack = deque()
+
 visited = set()
+created = {}
+
 s_postion = Position(s_index[0], s_index[1])
 node = Node("S", None, s_postion)
 stack.append(node)
+created[node.get()] = True
 
 while stack:
     current_node = stack.pop()
 
+    while current_node.get_state() == '%':
+        current_node = stack.pop()
+
     if current_node.is_goal():
-        current_node.goal_path()
-        break
+        print(current_node.goal_path())
+        end_time = time.perf_counter()
+        get_time(end_time)
+        sys.exit()
+
     expand(current_node)
+
+print("goal is not defined")
+end_time = time.perf_counter()
+get_time(end_time)
